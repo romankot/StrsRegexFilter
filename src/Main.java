@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
  */
 public class Main
 {
+    private static final String REGEXTOFIND = "regexToFind";
+    private static final String REPLACEMENT = "replacement";
+
     public static void main (String [] args) throws java.io.IOException
     {
         //System.out.print ("Start text: \r\n");
@@ -22,7 +25,7 @@ public class Main
 
         String inStr;
 
-        Map<Pattern, String> pairs = new HashMap<Pattern, String>();
+        Map<Pattern, Pattern> pairs = new HashMap<Pattern, Pattern>();
         String patternString = "";
         String replacement = "";
 
@@ -47,45 +50,52 @@ public class Main
 
         if (config.getConfig() == null)            // config file doesn't contains any pairs for substitution
         {
-            System.err.println("There is no any pair for substitution. Config file is empty. Please add some key/values for substitution");
-            while ((inStr = reader.readLine()) != null)
-            {
-               System.out.println(inStr);
-            }
+            System.err.println("There is no any pair for substitution. Config file is empty. Please add some key/values for substitution");            
             return ;
+        }
+        else
+        {
+            if ((config.getConfig().size() %2) != 0){
+                System.err.println("Wrong number of pairs in config file. It must be even: 2, 4, 6 ...");
+            }
         }
         // reading pairs (regex, replacement)
         for(String key : config.getConfig().stringPropertyNames())
         {
             String value = config.getConfig().getProperty(key);
+            
+            if (key.equals(REGEXTOFIND)){
 
-            if (key.contains("\\")) {
-                patternString = key.replace("\\", "\\\\");
-            }   else
-                patternString = key;
+                if (value.contains("\\")) {
+                    patternString = value.replace("\\", "\\\\");
+                }   else
+                    patternString = value;
+            }
 
-            if (value.contains("\\")) {
-                replacement = value.replace("\\", "\\\\");
-            }   else
-                replacement = value;
-
-            pairs.put(Pattern.compile(patternString), replacement);
+            if (key.equals(REPLACEMENT)) {
+                if (value.contains("\\")) {
+                    replacement = value.replace("\\", "\\\\");
+                }   else
+                    replacement = value;
+            }
         }
+        //pairs.put(Pattern.compile("(<font .* name=\")(.{6}\+)(.*?)(\".*>)"), "$1embedded$4");
+        pairs.put(Pattern.compile(patternString), Pattern.compile(replacement));
 
-//        for (Map.Entry<Pattern, String> entry : pairs.entrySet())
-//        {
-//            System.out.println("key = " + entry.getKey() + " value = " + entry.getValue());
-//        }
+        for (Map.Entry<Pattern, Pattern> entry : pairs.entrySet())
+        {
+            System.out.println("key = " + entry.getKey() + " value = " + entry.getValue());
+        }
 
         String outStr;
         while ((inStr = reader.readLine()) != null)
         {
              outStr = "";
 
-            for (Map.Entry<Pattern, String> entry : pairs.entrySet())
+            for (Map.Entry<Pattern, Pattern> entry : pairs.entrySet())
             {
                 Matcher matcher = entry.getKey().matcher(inStr);
-                outStr = matcher.replaceAll(entry.getValue());
+                outStr = matcher.replaceAll(String.valueOf(entry.getValue()));
                 inStr = outStr;
                 matcher.reset();
             }

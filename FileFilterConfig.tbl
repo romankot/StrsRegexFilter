@@ -1,0 +1,7 @@
+## This config file contains pair (regex -> replacemnet) for substitution.Please use "=", ":" or any white space character except line termination, as delimiter.
+#For example 
+#regexToFind=[0-9]
+#replacement=sub1
+regexToFind=(<font .* name=\")(.{6}\+)(.*?)(\".*>)
+replacement=$1embedded$4
+

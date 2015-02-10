@@ -9,7 +9,7 @@ public class ConfigLoader
 {
     Properties prop = null;
     FileOutputStream outputStream = null;
-    final static String CONFIG_PATH = "../data/tables";
+    final static String CONFIG_PATH = ".";
     final static String CONFIG_FILENAME = "FileFilterConfig.tbl";
 
     public ConfigLoader()
@@ -37,7 +37,9 @@ public class ConfigLoader
                 System.err.println(CONFIG_PATH + "/" +CONFIG_FILENAME + " was created");
                 prop.store(outputStream, "# This config file contains pair (regex -> replacemnet) for substitution." +
                                          "Please use \"=\", \":\" or any white space character except line termination, as delimiter.\r\n" +
-                                         "For example \r\n [0-9]+ # \r\n sub1   sub2 \r\n As you can see from example there is support for several pairs  ");
+                                         "For example \r\n" +
+                                         "regexToFind=[0-9]\r\n" +
+                                         "replacement=sub1\r\n");
             } catch (IOException e1) {
                 e1.printStackTrace();  //To change
 
